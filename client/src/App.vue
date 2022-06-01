@@ -1,7 +1,5 @@
 <template>
   <div id="app">
-    <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
 		<NavHome/>
 		<MembersCreator/>
 		<FooterHome/>
@@ -20,7 +18,6 @@ export default {
 		NavHome,
 		MembersCreator,
     FooterHome,
-		
   }
 }
 </script>
@@ -32,7 +29,7 @@ export default {
 		padding: 0;
 	}
 	body{
-		background-color: #2c3e50;
+		background-color: #d8dbdd;
 		font-size: 16px;
 	}
 	#app {
@@ -40,11 +37,10 @@ export default {
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		color: #2c3e50;
-		background-color: rgb(20, 20, 20);
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		flex-direction: column;
-		width: 100%;
-		/* margin-top: 60px; */
+		/* width: 100%; */
+		height: 100vh;
 	}
 </style>

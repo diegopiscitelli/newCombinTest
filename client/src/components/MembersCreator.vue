@@ -1,7 +1,8 @@
 <template>
   <div class="membersCreator">
+		<h1>Members</h1>
 		<div class="membersCreator--subwrapper">
-			<MembersForm @sendMember="postMember" :members="members"/>
+			<MembersForm @sendMember="postMember" :members="members" :postMemberSucces="postMemberSended"/>
 			<MembersTable :membersArray="members"/>
 		</div>
   </div>
@@ -21,6 +22,7 @@ export default {
 		return {
 			token: {},
 			members: [],
+			postMemberSended: false
 		}
 	},
 	
@@ -117,18 +119,30 @@ export default {
 <style scoped>
 	.membersCreator{
 		position: relative;
-		background-color: rgb(123, 139, 139);
+		background-color: rgb(225, 226, 231);
 		display: flex;
+		flex-direction: column;
+		align-items: center;
 		justify-content: center;
-		padding: 50px;
+		height: 100%;
+		width: 100%;
+		text-align: left;
+		padding: 10px;
+	}
+	h1{
+		align-self: flex-start;
+		padding: 5px 50px;
 	}
 	.membersCreator--subwrapper{
 		position: relative;
 		display: flex;
+		/* flex-wrap: wrap; */
 		justify-self: center;
-		justify-content: space-between;
-		max-width: 90%;
-		padding: 25px;
+		/* max-width: 90%; */
+		justify-content: space-around;
+		width: 95%;
+		min-height: 600px;
+		padding: 50px 25px;
 		background-color: rgb(240, 240, 240);
 		border-radius: 5px;
 	}

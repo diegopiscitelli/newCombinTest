@@ -1,25 +1,58 @@
 <template>
   <div class="membersForm">
+		<h2>Create a member</h2>
 		<form >
-			<input v-model="dataForm.firstName" @blur="handleURLInput('firstName')" :class="{'invalid' : $v.dataForm.firstName.$error}" placeholder="First Name"/>
-			<input v-model="dataForm.lastName" @blur="handleURLInput('lastName')" :class="{'invalid' : $v.dataForm.lastName.$error}" placeholder="Last Name"/>
-			<input v-model="dataForm.address" @blur="handleURLInput('address')" :class="{'invalid' : $v.dataForm.address.$error}" placeholder="Adress"/>
-			<input v-model="dataForm.ssn" @blur="handleURLInput('ssn')" :class="{'invalid' : $v.dataForm.ssn.$error}" placeholder="SSN"/>
-			<div v-if="!$v.dataForm.$anyError">Valid</div>
+			<div class="inputs-wrapper">
+				<input
+				type="text"
+				v-model.trim.lazy="$v.dataForm.firstName.$model"
+				@blur="handleURLInput('firstName')"
+				:class="{'invalid' : $v.dataForm.firstName.$error}"
+				placeholder="First Name"
+				/>
+				<div class="errorMessages" v-if="!$v.dataForm.firstName.minLength">At least 2 characters</div>
+				<div class="errorMessages" v-if="!$v.dataForm.firstName.required && $v.dataForm.firstName.$dirty">Field Required</div>
+				<input
+				type="text"
+				v-model.trim.lazy="$v.dataForm.lastName.$model"
+				@blur="handleURLInput('lastName')"
+				:class="{'invalid' : $v.dataForm.lastName.$error}"
+				placeholder="Last Name"
+				/>
+				<div class="errorMessages" v-if="!$v.dataForm.lastName.minLength">At least 2 characters</div>
+				<div class="errorMessages" v-if="!$v.dataForm.lastName.required && $v.dataForm.lastName.$dirty">Field Required</div>
+				<input
+				type="text"
+				v-model.trim.lazy="$v.dataForm.address.$model"
+				@blur="handleURLInput('address')"
+				:class="{'invalid' : $v.dataForm.address.$error}"
+				placeholder="Adress"
+				/>
+				<div class="errorMessages" v-if="!$v.dataForm.address.minLength">At least 2 characters</div>
+				<div class="errorMessages" v-if="!$v.dataForm.address.required && $v.dataForm.address.$dirty">Field Required</div>
+				<input
+				v-model.trim.lazy="$v.dataForm.ssn.$model"
+				@blur="handleURLInput('ssn')"
+				:class="{'invalid' : $v.dataForm.ssn.$error}"
+				placeholder="SSN"
+				/>
+				<div class="errorMessages" v-if="!$v.dataForm.ssn.minLength">SSN format: nnn-nn-nnnn<br>n: number</div>
+				<div class="errorMessages" v-if="!$v.dataForm.ssn.required && $v.dataForm.ssn.$dirty">Field Required</div>
+			</div>
+			
 			<div class="buttons-form-wrapper">
 				<div @click="resetForm" class="buttons reset">Reset</div>
-				<div @click="sendMember()" :class="['buttons', 'active', {'inactive' : !isValidData}]">Send</div>
+				<div @click="sendMember" :class="['buttons', 'active', {'inactive' : !isValidData}]">Send</div>
 			</div>
 		</form>
   </div>
 </template>
-
 <script>
-import { required, minLength} from 'vuelidate/lib/validators';
+import { required, minLength, helpers} from 'vuelidate/lib/validators';
 export default {
   name: 'MembersForm',
 	props: {
-		members:[]
+		members:[],
 	},
 	data() {
 		return {
@@ -28,15 +61,7 @@ export default {
 				lastName: '',
 				address: '',
 				ssn: '',
-			},
-			// members:[]
-			// validData: {
-			// 	firstName:'',
-			// 	lastName:'',
-			// 	address:'',
-			// 	ssn:'',
-			// },
-			// isValidData: this.$validations.dataForm.$error? true : false
+			}
 		}
 	},
 	validations() {
@@ -44,22 +69,25 @@ export default {
 			dataForm: {
 				firstName: {
 					required,
-					minLength: minLength(1)
+					minLength: minLength(2)
 				},
 				lastName: {
 					required,
-					minLength: minLength(1)
+					minLength: minLength(2)
 				},
 				address: {
 					required,
-					minLength: minLength(1)
+					minLength: minLength(2)
 				},
 				ssn: {
 					required,
 					minLength: minLength(11),
 					validator(value){
-						console.log(this.existingMembersSSN.includes(value));
 						return !this.existingMembersSSN.includes(value);
+					},
+					format(value) {
+						const alpha = helpers.regex('alpha', /^\d{3}-\d{2}-\d{4}$/);
+						return alpha(value);
 					}
 				}
 			}
@@ -67,7 +95,6 @@ export default {
 	},
 	computed: {
 		isValidData() {
-			console.log('polla');
 			return !this.$v.dataForm.$invalid? true : false;
 		},
 		existingMembersSSN() {
@@ -75,29 +102,36 @@ export default {
 			if(this.members.length) {
 				this.members.forEach((member) => {
 					array.push(member.ssn);
-					console.log(array);
 				});
 			}
 			return array;
 		}
 		
 	},
+	watch:{
+		members: {
+			deep: true,
+			immediate: false,
+			handler(){
+				this.resetForm();
+			}
+		}
+	},
 	methods:{
-		// validData() {
-		// 	// let data = this.dataForm;
-		// },
-		
 		handleURLInput(field) {
-			// Tell vuelidate that the url has been changed so it can set `url.$dirty` to true and we can display the error
+			// Tell vuelidate that the field has been changed so it can set `field.$dirty` to true and we can display the error
 			this.$v.dataForm[field].$touch();
 		},
 		sendMember() {
-			this.$emit('sendMember', this.dataForm);
+			if(!this.$v.$anyError){	
+				this.$emit('sendMember', this.dataForm);
+			}
 		},
 		resetForm() {
 			for (const property in this.dataForm){
 				this.dataForm[property] = '';
 			}
+			this.$v.$reset();
 		}
 	}
 }
@@ -107,7 +141,7 @@ export default {
 <style scoped>
 	.membersForm{
 		position: relative;
-		width: 35%;
+		width: 30%;
 		display: flex;
 		flex-direction: column;
 		background-color: #fff;
@@ -116,40 +150,57 @@ export default {
 		box-shadow: 0px 0px 10px rgb(197, 197, 197);
 
 	}
+	h2{
+		margin-bottom: 10px;
+	}
 	form {
+		position: relative;
 		display: flex;
 		flex-direction: column;
+		justify-content: space-between;
+		height: 100%;
+		width: 100%;
+	}
+	.inputs-wrapper{
+		position: relative;
+		height: fit-content;
 	}
 	input {
 		box-sizing: border-box;
 		width: 100%;
 		margin: 2px 0;
 		padding: 10px;
-		border: solid 1px rgb(207, 207, 207);
+		border: solid 1.5px rgb(207, 207, 207);
 		outline: none;
 		color: rgb(39, 39, 39);
 		font-weight: 500;
 		border-radius: 5px;
-		transition: all 0.2s;
+		transition: all 0.3s;
 		}
 		input::placeholder {
 			color: rgb(150, 150, 150);
 		}
+	.errorMessages{
+		color: rgb(214, 76, 76);
+		font-size: 0.9em;
+	}
 	.buttons-form-wrapper{
 		display: flex;
 		justify-content: space-between;
 		margin-top: 25px;
+		bottom: 0;
+		position: relative;
 	}
 	.buttons{
 		cursor: pointer;
-		box-shadow: 0px 0px 4px rgb(197, 197, 197);
 		padding: 5px 10px;
 		border-radius: 5px;
 		transition: all 0.2s;
+		border: 2px solid rgb(66, 141, 211);
 
 	}
 	.invalid{
-		border-color: red;
+		border-color: rgb(214, 76, 76);
 	}
 	.active{
 		background: rgb(66, 141, 211);
