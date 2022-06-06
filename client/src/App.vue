@@ -30,7 +30,7 @@ export default {
 	}
 	body{
 		background-color: #d8dbdd;
-		font-size: 16px;
+		font-size: 15px;
 	}
 	#app {
 		font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -39,6 +39,8 @@ export default {
 		color: #2c3e50;
 		display: flex;
 		justify-content: space-between;
+		align-items: stretch;
+
 		flex-direction: column;
 		/* width: 100%; */
 		height: 100vh;

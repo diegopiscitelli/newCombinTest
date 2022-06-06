@@ -36,7 +36,7 @@
 				:class="{'invalid' : $v.dataForm.ssn.$error}"
 				placeholder="SSN"
 				/>
-				<div class="errorMessages" v-if="!$v.dataForm.ssn.minLength">SSN format: nnn-nn-nnnn<br>n: number</div>
+				<div class="errorMessages" v-if="!$v.dataForm.ssn.minLength || !$v.dataForm.ssn.format">SSN format: * NNN-NN-NNNN<br>*N: number</div>
 				<div class="errorMessages" v-if="!$v.dataForm.ssn.required && $v.dataForm.ssn.$dirty">Field Required</div>
 			</div>
 			
@@ -48,7 +48,7 @@
   </div>
 </template>
 <script>
-import { required, minLength, helpers} from 'vuelidate/lib/validators';
+import { required, minLength, maxLength, helpers} from 'vuelidate/lib/validators';
 export default {
   name: 'MembersForm',
 	props: {
@@ -82,6 +82,7 @@ export default {
 				ssn: {
 					required,
 					minLength: minLength(11),
+					maxLength: maxLength(11),
 					validator(value){
 						return !this.existingMembersSSN.includes(value);
 					},
@@ -145,20 +146,21 @@ export default {
 		display: flex;
 		flex-direction: column;
 		background-color: #fff;
-		padding: 25px;
+		padding: 20px 25px;
 		border-radius: 0.5rem;
 		box-shadow: 0px 0px 10px rgb(197, 197, 197);
 
 	}
 	h2{
-		margin-bottom: 10px;
+		margin-bottom: 20px;
+		font-size: 1.2em;
 	}
 	form {
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		height: 100%;
+		height: fit-content;
 		width: 100%;
 	}
 	.inputs-wrapper{
@@ -168,20 +170,20 @@ export default {
 	input {
 		box-sizing: border-box;
 		width: 100%;
-		margin: 2px 0;
+		margin: 5px 0;
 		padding: 10px;
-		border: solid 1.5px rgb(207, 207, 207);
+		border: solid 1.5px #cfcfcf;
 		outline: none;
-		color: rgb(39, 39, 39);
+		color: #272727;
 		font-weight: 500;
 		border-radius: 5px;
 		transition: all 0.3s;
 		}
 		input::placeholder {
-			color: rgb(150, 150, 150);
+			color: #969696;
 		}
 	.errorMessages{
-		color: rgb(214, 76, 76);
+		color: #d64c4c;
 		font-size: 0.9em;
 	}
 	.buttons-form-wrapper{
@@ -196,15 +198,25 @@ export default {
 		padding: 5px 10px;
 		border-radius: 5px;
 		transition: all 0.2s;
-		border: 2px solid rgb(66, 141, 211);
-
+		border: 2px solid #578ddd;
+	}
+	.reset:hover{
+		background: #578ddd;
+		color: #fff;
 	}
 	.invalid{
-		border-color: rgb(214, 76, 76);
+		border-color: #d64c4c;
 	}
 	.active{
-		background: rgb(66, 141, 211);
+		background: #578ddd;
 		color: #fff;
+		width: 120px;
+		max-width: 50%;
+		text-align: center;
+	}
+	.active:hover{
+		background: #57dda5;
+		border-color: #57dda5;
 	}
 	.inactive{
 		pointer-events: none;

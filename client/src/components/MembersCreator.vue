@@ -1,9 +1,9 @@
 <template>
-  <div class="membersCreator">
-		<h1>Members</h1>
+  <div ref="creator" class="membersCreator">
+		<h1>Members Dashboard</h1>
 		<div class="membersCreator--subwrapper">
-			<MembersForm @sendMember="postMember" :members="members" :postMemberSucces="postMemberSended"/>
-			<MembersTable :membersArray="members"/>
+			<MembersForm @sendMember="postMember" :members="members"/>
+			<MembersTable :membersArray="members" :loading="isLoadingData"/>
 		</div>
   </div>
 </template>
@@ -22,15 +22,55 @@ export default {
 		return {
 			token: {},
 			members: [],
-			postMemberSended: false
+			isLoadingData: false,
+			activity: false,
+			activityInterval: null,
+			time: null,
 		}
 	},
 	
 	mounted() {
 		this.getMembers();
+		this.time = new Date().getTime();
+		// this.activityInterval = setInterval(this.getMembers, 5000);
+		this.$refs.creator.addEventListener('mousemove', this.setActivityTime);
+		// setTimeout(() => {
+		// 	this.refresh();
+		// }, 10000);
 	},
-
+	watch:{
+		// activity(value) {
+		// 	if (!value) {
+		// 		clearInterval(this.activityInterval);
+		// 		this.activityInterval = null;
+		// 		this.getMembers();
+		// 	}
+		// }
+	},
 	methods: {
+		// resetActivity() {
+		// 	console.log('caca');
+		// 	this.activityInterval = setInterval(this.getMembers, 10000);
+		// 	this.activity = true;
+		// },
+		setActivityTime() {
+			console.log('mousmove');
+			this.time = new Date().getTime();
+			this.refresh();
+		},
+		refresh() {
+			console.log(new Date().getTime() - this.time >= 15000);
+			if (new Date().getTime() - this.time >= 15000) {
+				console.log('refresh');
+				console.log('inactivity');
+				this.getMembers();
+			} else {
+				console.log('refresh again');
+				setTimeout(() => {
+					this.refresh();
+				}, 1000);
+			}
+		},
 		async getToken() {
 			try {
 				let auth = {
@@ -82,6 +122,7 @@ export default {
 				});
 				if (status === 200) {
 					this.members.push(res);
+					this.setActivityTime();
 				}
 
 			}catch (error) {
@@ -90,7 +131,9 @@ export default {
 		},
 		async getMembers() {
 			await this.getToken();
+			this.activity = true;
 			let auth = this.token.token;
+			this.isLoadingData = true;
 			let status;
 			const res = fetch('http://localhost:8081/api/members', {
 				method: 'GET',
@@ -109,6 +152,7 @@ export default {
 			let data = await res;
 			if(status === 200 ){
 				this.members = data;
+				this.isLoadingData = false;
 			}
 		}
 	}
@@ -119,31 +163,33 @@ export default {
 <style scoped>
 	.membersCreator{
 		position: relative;
-		background-color: rgb(225, 226, 231);
+		background-color: #fff;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100%;
 		width: 100%;
+		height: 100%;
 		text-align: left;
-		padding: 10px;
+		padding: 10px 50px;
 	}
 	h1{
 		align-self: flex-start;
-		padding: 5px 50px;
+		padding: 5px 10px;
+		border-left: 3px solid #578ddd;
+		margin-bottom: 15px;
+		font-size: 1.2em;
 	}
 	.membersCreator--subwrapper{
 		position: relative;
 		display: flex;
-		/* flex-wrap: wrap; */
 		justify-self: center;
 		/* max-width: 90%; */
 		justify-content: space-around;
-		width: 95%;
-		min-height: 600px;
+		height: 100%;
+		width: 80%;
 		padding: 50px 25px;
-		background-color: rgb(240, 240, 240);
-		border-radius: 5px;
+		background-color: #f7f7f7;
+		border-radius: 10px;
 	}
 </style>
