@@ -25,10 +25,7 @@ import CircularLoader from './CircularLoader';
 export default {
   name: 'MembersTable',
 	components: {CircularLoader},
-	// data() {
-	// 	return {
-	// 	}
-	// },
+
 	props:{
 		membersArray: [],
 		// eslint-disable-next-line vue/require-prop-type-constructor
@@ -37,7 +34,6 @@ export default {
 	}
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 	.membersTable{
 		position: relative;
@@ -47,6 +43,8 @@ export default {
 		background-color: #fff;
 		box-shadow: 0px 0px 10px rgb(197, 197, 197);
 		border-radius: 0.5rem;
+		overflow: hidden;
+		overflow-y: auto;
 	}
 	.loader{
 		top: 0;
@@ -83,6 +81,10 @@ export default {
 		border-bottom: 1px solid rgb(177, 177, 177);
 	}
 	td{
+		max-width: 100px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		padding: 2px;
 	}
 </style>

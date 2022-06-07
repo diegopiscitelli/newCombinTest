@@ -24,53 +24,45 @@ export default {
 			members: [],
 			isLoadingData: false,
 			activity: false,
-			activityInterval: null,
 			time: null,
+			activityInterval: null,
 		}
 	},
 	
 	mounted() {
 		this.getMembers();
 		this.time = new Date().getTime();
-		// this.activityInterval = setInterval(this.getMembers, 5000);
-		this.$refs.creator.addEventListener('mousemove', this.setActivityTime);
-		// setTimeout(() => {
-		// 	this.refresh();
-		// }, 10000);
+		// listeners to detect user activity
+		window.addEventListener('click', this.setActivityTime); 
+		window.addEventListener('scroll', this.setActivityTime); 
+		window.addEventListener('mousemove', this.setActivityTime);
+		window.addEventListener('keydown', this.setActivityTime); 
 	},
+	
+	beforeDestroy() {
+		window.removeEventListener('click', this.setActivityTime); 
+		window.removeEventListener('scroll', this.setActivityTime); 
+		window.removeEventListener('mousemove', this.setActivityTime);
+		window.removeEventListener('keydown', this.setActivityTime); 
+	},
+
 	watch:{
-		// activity(value) {
-		// 	if (!value) {
-		// 		clearInterval(this.activityInterval);
-		// 		this.activityInterval = null;
-		// 		this.getMembers();
-		// 	}
-		// }
+		time(newValue, oldValue) {
+			if(!newValue || !oldValue || this.isLoadingData) return;
+			if(newValue - oldValue >= 120000) {
+				this.getMembers();
+			}
+		}
 	},
 	methods: {
-		// resetActivity() {
-		// 	console.log('caca');
-		// 	this.activityInterval = setInterval(this.getMembers, 10000);
-		// 	this.activity = true;
-		// },
 		setActivityTime() {
-			console.log('mousmove');
-			this.time = new Date().getTime();
-			this.refresh();
-		},
-		refresh() {
-			console.log(new Date().getTime() - this.time >= 15000);
-			if (new Date().getTime() - this.time >= 15000) {
-				console.log('refresh');
-				console.log('inactivity');
-				this.getMembers();
-			} else {
-				console.log('refresh again');
-				setTimeout(() => {
-					this.refresh();
-				}, 1000);
+			if (this.activityInterval){
+				this.time = new Date().getTime();
+				clearInterval(this.activityInterval);
 			}
+			this.activityInterval = setInterval(this.setActivityTime, 120000);
 		},
+
 		async getToken() {
 			try {
 				let auth = {
@@ -120,9 +112,9 @@ export default {
 				.then((responseData) => {
 					return responseData;
 				});
+
 				if (status === 200) {
 					this.members.push(res);
-					this.setActivityTime();
 				}
 
 			}catch (error) {
@@ -147,19 +139,20 @@ export default {
 				return res.json()
 			})
 			.then( (json) => {
+				console.log(json);
 				return json;
 				})
 			let data = await res;
 			if(status === 200 ){
 				this.members = data;
 				this.isLoadingData = false;
+				this.setActivityTime();
 			}
 		}
 	}
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 	.membersCreator{
 		position: relative;
@@ -174,7 +167,10 @@ export default {
 		padding: 10px 50px;
 	}
 	h1{
-		align-self: flex-start;
+		margin-left: 5px;
+		align-self: center;
+		width: 85%;
+		height: 35px;
 		padding: 5px 10px;
 		border-left: 3px solid #578ddd;
 		margin-bottom: 15px;
@@ -184,12 +180,11 @@ export default {
 		position: relative;
 		display: flex;
 		justify-self: center;
-		/* max-width: 90%; */
 		justify-content: space-around;
-		height: 100%;
-		width: 80%;
+		height: 85%;
+		width: 85%;
 		padding: 50px 25px;
-		background-color: #f7f7f7;
+		background-color: #fafafa;
 		border-radius: 10px;
 	}
 </style>

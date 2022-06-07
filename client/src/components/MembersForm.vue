@@ -94,6 +94,7 @@ export default {
 			}
 		}
 	},
+	
 	computed: {
 		isValidData() {
 			return !this.$v.dataForm.$invalid? true : false;
@@ -138,7 +139,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 	.membersForm{
 		position: relative;

@@ -19,8 +19,9 @@ export default {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		text-align: center;
-		color:#fff;
+		text-align: left;
+		padding: 25px;
+		color:rgb(173, 173, 173);
 		vertical-align: center;
 		line-height: 20px;
 	}

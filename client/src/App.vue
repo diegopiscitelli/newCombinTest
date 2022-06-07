@@ -40,9 +40,7 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: stretch;
-
 		flex-direction: column;
-		/* width: 100%; */
 		height: 100vh;
 	}
 </style>
